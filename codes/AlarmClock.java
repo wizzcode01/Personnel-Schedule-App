@@ -28,6 +28,9 @@ public class AlarmClock implements Runnable {
 
     @Override
     public void run() {
+        if (LocalTime.now().isAfter(alarmTime)) {
+            System.out.println("Alarm time has already passed for " + task);
+        }
         while (LocalTime.now().isBefore(alarmTime)) {
             try {
                 Thread.sleep(1000);

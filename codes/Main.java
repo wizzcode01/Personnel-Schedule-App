@@ -1,5 +1,10 @@
 package codes;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +31,7 @@ public class Main {
         ArrayList<String> tasks = new ArrayList<>();
         ArrayList<LocalTime> alarm = new ArrayList<>();
         String filePath = "codes\\file_example_WAV_1MG.wav";
+        String writeFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
 
         System.out
                 .println("***************Welcome to Wisdom Personnel Task/Finance Software Application**************");
@@ -58,11 +64,46 @@ public class Main {
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid format, Please use our HH:MM");
                 }
-            }
-            System.out.println("\n your tasks for today are: ");
 
-            for (int i = 0; i < tasks.size(); i++) {
-                System.out.println("- " + tasks.get(i) + " " + "time is" + " " + alarm.get(i));
+                try (FileWriter writer = new FileWriter(writeFilePath, true)) {
+                    for (String t : tasks) {
+                        writer.write(t + 1 + t + " " + alarm.get(tasks.indexOf(t)) + "\n");
+                    }
+
+                    // for (int j = 0; j < tasks.size(); j++) {
+                    // writer.write(j + 1 + j + " " + alarm.get(tasks.indexOf(j)) + "\n");
+                    // }
+
+                    System.out.println("Task has been written in file");
+                } catch (FileNotFoundException e) {
+                    System.out.println("Could not locate file location");
+                } catch (IOException e) {
+                    System.out.println("Could not write file");
+                }
+            }
+            // System.out.println("\n your tasks for today are: ");
+
+            // for (int i = 0; i < tasks.size(); i++) {
+            // System.out.println("- " + tasks.get(i) + " " + "time is" + " " +
+            // alarm.get(i));
+            // }
+
+            String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
+
+            System.out.println("\n Enter (check) to check the list of all your tasks:");
+            String check = scanner.nextLine().toLowerCase();
+            if (check.equals("check")) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+
+                } catch (FileNotFoundException e) {
+                    System.out.println("Could not locate file location");
+                } catch (IOException e) {
+                    System.out.println("Error reading file");
+                }
             }
 
             for (LocalTime time : alarm) {
@@ -71,12 +112,29 @@ public class Main {
                 alarmThread.start();
             }
 
-            // AlarmClock alarmClock = new AlarmClock(filePath);
-            // Thread alarmThread = new Thread(alarmClock);
-            // alarmThread.start();
-
         } else {
             System.out.println("You ended the program!");
         }
+    }
+
+    public static void actionOnTask() {
+        String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
+        System.out.println("Enter task number to update or delete a task");
+        System.out.println("Enter 1 to update task and 2 to delete task: ");
+        int action = new Scanner(System.in).nextInt();
+        if (action == 1) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Could not locate file location");
+            } catch (IOException e) {
+                System.out.println("Error reading file");
+            }
+        }
+
     }
 }
