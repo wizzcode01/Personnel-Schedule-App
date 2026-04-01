@@ -81,12 +81,6 @@ public class Main {
                     System.out.println("Could not write file");
                 }
             }
-            // System.out.println("\n your tasks for today are: ");
-
-            // for (int i = 0; i < tasks.size(); i++) {
-            // System.out.println("- " + tasks.get(i) + " " + "time is" + " " +
-            // alarm.get(i));
-            // }
 
             String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
 
@@ -118,6 +112,11 @@ public class Main {
     }
 
     public static void actionOnTask() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime alarmTime = null;
+
+        ArrayList<String> tasks = new ArrayList<>();
+        ArrayList<LocalTime> alarm = new ArrayList<>();
         String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
         System.out.println("Enter task number to update or delete a task");
         System.out.println("Enter 1 to update task and 2 to delete task: ");
@@ -127,14 +126,51 @@ public class Main {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
+
                 }
+                System.out.print("Enter task number to update:");
+                int taskNumber = new Scanner(System.in).nextInt();
+                System.out.print("Update new task for task" + taskNumber + ": ");
+                String newTask = new Scanner(System.in).nextLine();
+
+                try {
+                    System.out.print("Enter new alarm time for task" + (taskNumber) + " " + "(HH:MM:SS): ");
+                    String inputTime = new Scanner(System.in).nextLine();
+
+                    alarmTime = LocalTime.parse(inputTime, formatter);
+                    alarm.add(alarmTime);
+                    System.out.println("new Alarm set for " + alarmTime);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid format, Please use our HH:MM");
+                }
+                tasks.set(taskNumber - 1, newTask + " " + alarm.get(taskNumber - 1));
 
             } catch (FileNotFoundException e) {
                 System.out.println("Could not locate file location");
             } catch (IOException e) {
                 System.out.println("Error reading file");
             }
+        } else if (action == 2) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+                System.out.print("Enter task number to delete: ");
+                int taskNumber = new Scanner(System.in).nextInt();
+                tasks.remove(taskNumber - 1);
+                System.out.println("Task " + taskNumber + " has been deleted");
+            } catch (FileNotFoundException e) {
+                System.out.println("Could not locate file location");
+
+            } catch (IOException e) {
+                System.out.println("Error reading file");
+            }
+        } else {
+            System.out.println("Invalid input, Please enter 1 to update task and 2 to delete task");
         }
+
+        new Scanner(System.in).close();
 
     }
 }
