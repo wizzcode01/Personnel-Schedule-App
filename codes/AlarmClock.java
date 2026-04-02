@@ -14,24 +14,25 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AlarmClock implements Runnable {
 
-    private final LocalTime alarmTime;
+    // private final LocalTime alarmTime;
     private final String filePath;
     private final Scanner scanner;
-    private final String task;
+    private final Task task;
 
-    AlarmClock(LocalTime alarmTime, String task, Scanner scanner, String filePath) {
-        this.alarmTime = alarmTime;
+    AlarmClock(Task task, Scanner scanner, String filePath) {
+        // this.task = task.getAlarmTime();
         this.filePath = filePath;
         this.scanner = scanner;
         this.task = task;
+        // this.task = task.getTask();
     }
 
     @Override
     public void run() {
-        if (LocalTime.now().isAfter(alarmTime)) {
-            System.out.println("Alarm time has already passed for " + task);
+        if (LocalTime.now().isAfter(task.getAlarmTime())) {
+            System.out.println("Alarm time has already passed for " + task.getTask());
         }
-        while (LocalTime.now().isBefore(alarmTime)) {
+        while (LocalTime.now().isBefore(task.getAlarmTime())) {
             try {
                 Thread.sleep(1000);
 
@@ -45,7 +46,7 @@ public class AlarmClock implements Runnable {
                 System.out.println("Thread was interrupted");
             }
         }
-        System.out.println("\n*Alarm time reached for " + task);
+        System.out.println("\n*Alarm time reached for " + task.getTask());
         playSound(filePath);
     }
 
