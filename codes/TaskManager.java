@@ -21,8 +21,8 @@ public class TaskManager {
         String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
             String line;
+            System.out.println("Here are your tasks:");
             while ((line = reader.readLine()) != null) {
-                System.out.println("Here are your tasks:");
                 System.out.println(line);
             }
         } catch (FileNotFoundException e) {
@@ -73,12 +73,13 @@ public class TaskManager {
                     writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime() + "\n");
                 }
 
-                System.out.println("Task has been written in file");
                 for (Task task : tasks) {
                     AlarmClock alarmClock = new AlarmClock(task, scanner, filePath);
                     Thread alarmThread = new Thread(alarmClock);
                     alarmThread.start();
                 }
+                System.out.println("Task has been written in file");
+
             } catch (FileNotFoundException e) {
                 System.out.println("Could not locate file location");
             } catch (IOException e) {
