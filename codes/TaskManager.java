@@ -16,9 +16,14 @@ public class TaskManager {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     String filePath = "codes\\file_example_WAV_1MG.wav";
+    String writeFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
 
     public void showTask() {
         String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
+        if (tasks.isEmpty()) {
+            System.out.println("No task added yet");
+            return;
+        }
         try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
             String line;
             System.out.println("Here are your tasks:");
@@ -31,19 +36,9 @@ public class TaskManager {
             System.out.println("Error reading file");
         }
 
-        // if (tasks.isEmpty()) {
-        // System.out.println("No tasks added yet!");
-        // } else {
-        // System.out.println("Here are your tasks:");
-        // for (int i = 0; i < tasks.size(); i++) {
-        // System.out.println((i + 1) + ". " + tasks.get(i).getTask() + " " +
-        // tasks.get(i).getAlarmTime());
-        // }
-        // }
     }
 
     public void AddTask(Scanner scanner) {
-        String writeFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
 
         System.out.print("How many tasks/activity will you do today: ");
         int amountOfTask = scanner.nextInt();
@@ -90,23 +85,28 @@ public class TaskManager {
     }
 
     public void updateTask(Scanner scanner) {
+        System.out.println("***************************************************");
         showTask();
+        System.out.println("***************************************************");
         System.out.print("Enter task number to update: ");
         int taskNumber = scanner.nextInt();
         scanner.nextLine();
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            System.out.println("Invalid task number");
-            return;
-        }
+        // if (taskNumber < 1 || taskNumber > tasks.size()) {
+        // System.out.println("Invalid task number");
+        // return;
+        // }
         System.out.print("Update new task for task" + taskNumber + ": ");
         String newTask = scanner.nextLine();
-        try {
+        try (FileWriter writer = new FileWriter(writeFilePath, true)) {
             System.out.print("Enter an alarm time for task" + taskNumber + " " + "(HH:MM:SS): ");
             String inputTime = scanner.nextLine();
 
             LocalTime alarmTime = LocalTime.parse(inputTime, formatter);
             tasks.get(taskNumber - 1).setTask(newTask);
             tasks.get(taskNumber - 1).setAlarmTime(alarmTime);
+            for (Task task : tasks) {
+                writer.write((tasks.indexOf(task) + 1) + ". " + task.getTask() + " " + task.getAlarmTime() + "\n");
+            }
             System.out.println("Task updated successfully");
             for (Task task : tasks) {
                 AlarmClock alarmClock = new AlarmClock(task, scanner, filePath);
@@ -115,6 +115,8 @@ public class TaskManager {
             }
         } catch (DateTimeParseException e) {
             System.out.println("Invalid format, Please use our HH:MM");
+        } catch (IOException e) {
+            System.out.println("Could not write file");
         }
     }
 
@@ -123,12 +125,19 @@ public class TaskManager {
         System.out.println("Enter task number to delete: ");
         int taskNumber = scanner.nextInt();
         scanner.nextLine();
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            System.out.println("Invalid task number");
-            return;
+        try (FileWriter writer = new FileWriter(writeFilePath, true)) {
+            // if (taskNumber < 1 || taskNumber > tasks.size()) {
+            // System.out.println("Invalid task number");
+            // return;
+            // }
+            tasks.remove(taskNumber - 1);
+            for (Task task : tasks) {
+                writer.write((tasks.indexOf(task) + 1) + ". " + task.getTask() + " " + task.getAlarmTime() + "\n");
+            }
+            System.out.println("Task " + taskNumber + " has been deleted");
+        } catch (IOException e) {
+            System.out.println("Could not write file");
         }
-        tasks.remove(taskNumber - 1);
-        System.out.println("Task " + taskNumber + " has been deleted");
     }
 
 }

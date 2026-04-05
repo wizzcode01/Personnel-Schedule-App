@@ -38,10 +38,10 @@ public class AlarmClock implements Runnable {
 
                 LocalTime now = LocalTime.now();
 
-                System.out.printf("\r%02d:%02d:%02d",
-                        now.getHour(),
-                        now.getMinute(),
-                        now.getSecond());
+                // System.out.printf("\r%02d:%02d:%02d",
+                // now.getHour(),
+                // now.getMinute(),
+                // now.getSecond());
             } catch (InterruptedException e) {
                 System.out.println("Thread was interrupted");
             }
