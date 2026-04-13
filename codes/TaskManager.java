@@ -47,11 +47,12 @@ public class TaskManager {
             System.out.print("Enter your task: " + (i + 1) + ": ");
             String userTask = scanner.nextLine();
             // tasks.add(task);
+            LocalTime alarmTime = null;
             try {
                 System.out.print("Enter an alarm time for task" + (i + 1) + " " + "(HH:MM:SS): ");
                 String inputTime = scanner.nextLine();
 
-                LocalTime alarmTime = LocalTime.parse(inputTime, formatter);
+                alarmTime = LocalTime.parse(inputTime, formatter);
                 Task task = new Task(userTask, alarmTime);
                 tasks.add(task);
                 System.out.println("Alarm set for " + alarmTime);
@@ -60,12 +61,18 @@ public class TaskManager {
             }
 
             try (FileWriter writer = new FileWriter(writeFilePath, true)) {
-                // for (String t : tasks) {
-                // writer.write(t + 1 + t + " " + alarm.get(tasks.indexOf(t)) + "\n");
-                // }
-
                 for (int j = 0; j < tasks.size(); j++) {
-                    writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime() + "\n");
+                    if (alarmTime != LocalTime.now()) {
+                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
+                                + "pending..." + "\n");
+                    } else if (alarmTime.equals(LocalTime.now())) {
+                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
+                                + "it is time..." + "\n");
+                    } else if (alarmTime.isAfter(LocalTime.now())) {
+                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
+                                + "time passed..." + "\n");
+
+                    }
                 }
 
                 for (Task task : tasks) {
@@ -82,6 +89,21 @@ public class TaskManager {
             }
         }
 
+    }
+
+    public void markAsCompleted(Scanner scanner) {
+        showTask();
+        System.out.print("Enter task number to mark as completed: ");
+        int taskNumber = scanner.nextInt();
+        scanner.nextLine();
+        try (FileWriter writer = new FileWriter(writeFilePath, true)) {
+            writer.write(taskNumber + ". " + tasks.get(taskNumber - 1).getTask() + " "
+                    + tasks.get(taskNumber - 1).getAlarmTime() + " completed");
+            System.out.println("Task " + taskNumber + " has been marked as completed");
+
+        } catch (IOException e) {
+            System.out.println("Could not write into file");
+        }
     }
 
     public void updateTask(Scanner scanner) {
@@ -137,6 +159,16 @@ public class TaskManager {
             System.out.println("Task " + taskNumber + " has been deleted");
         } catch (IOException e) {
             System.out.println("Could not write file");
+        }
+    }
+
+    public void clearAllTasks() {
+        tasks.clear();
+        try (FileWriter writer = new FileWriter(writeFilePath, false)) {
+            writer.write("");
+            System.out.println("All task has been cleared. You can start adding new task");
+        } catch (IOException e) {
+            System.out.println("Could not clear tasks");
         }
     }
 

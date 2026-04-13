@@ -36,7 +36,9 @@ public class Main {
             System.out.println("3. Delete Task");
             System.out.println("4. Show Tasks");
             System.out.println("5. Manage finance");
-            System.out.println("6. Exit");
+            System.out.println("6. Mark task as completed");
+            System.out.println("7. Clear all tasks");
+            System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -47,8 +49,10 @@ public class Main {
                 case 3 -> taskManager.deleteTask(scanner);
                 case 4 -> taskManager.showTask();
                 case 5 -> financeManager.manageFinance(scanner);
+                case 6 -> taskManager.markAsCompleted(scanner);
+                case 7 -> taskManager.clearAllTasks();
 
-                case 6 -> {
+                case 8 -> {
                     System.out.println("Exiting...");
                     return;
                 }
