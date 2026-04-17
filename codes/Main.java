@@ -51,7 +51,6 @@ public class Main {
                 case 5 -> financeManager.manageFinance(scanner);
                 case 6 -> taskManager.markAsCompleted(scanner);
                 case 7 -> taskManager.clearAllTasks();
-
                 case 8 -> {
                     System.out.println("Exiting...");
                     return;

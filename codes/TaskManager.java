@@ -20,16 +20,24 @@ public class TaskManager {
 
     public void showTask() {
         String readFilePath = "c:\\\\Users\\\\HomePC\\\\Desktop\\\\task-db.txt";
-        if (tasks.isEmpty()) {
-            System.out.println("No task added yet");
-            return;
-        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
-            String line;
-            System.out.println("Here are your tasks:");
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+            String line = reader.readLine();
+
+            if (line == null || line.isEmpty()) {
+                System.out.println("No task added yet");
+                return;
+            } else {
+                System.out.println("Here are your tasks:");
+                while ((line) != null) {
+                    line = reader.readLine();
+                    tasks.add(line);
+                }
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println((i + 1) + " " + tasks.get(i).getTask() + " " + tasks.get(i).getAlarmTime());
+                }
             }
+
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (IOException e) {
@@ -43,51 +51,54 @@ public class TaskManager {
         System.out.print("How many tasks/activity will you do today: ");
         int amountOfTask = scanner.nextInt();
         scanner.nextLine();
+        // try (FileWriter writer = new FileWriter(writeFilePath, true)) {
         for (int i = 0; i < amountOfTask; i++) {
             System.out.print("Enter your task: " + (i + 1) + ": ");
             String userTask = scanner.nextLine();
-            // tasks.add(task);
             LocalTime alarmTime = null;
             try {
-                System.out.print("Enter an alarm time for task" + (i + 1) + " " + "(HH:MM:SS): ");
+                System.out.print("Enter an alarm time for task " + (i + 1) + " " + "(HH:MM:SS): ");
                 String inputTime = scanner.nextLine();
 
                 alarmTime = LocalTime.parse(inputTime, formatter);
+
                 Task task = new Task(userTask, alarmTime);
                 tasks.add(task);
+
                 System.out.println("Alarm set for " + alarmTime);
+
+                FileWriter writer = new FileWriter(writeFilePath, true);
+
+                LocalTime now = LocalTime.now();
+                if (alarmTime.equals(now)) {
+                    writer.write(task.getTask() + " " + (task.getAlarmTime())
+                            + " it is time...\n");
+                } else if (alarmTime.isAfter(now)) {
+                    writer.write(task.getTask() + " " + (task.getAlarmTime())
+                            + " pending...\n");
+                } else {
+                    writer.write(task.getTask() + " " + (task.getAlarmTime())
+                            + " time passed...\n");
+                }
+                writer.close();
+
+                // tasks.size() + ". " +
+                // tasks.size() + ". " +
+                // tasks.size() + ". " +
+
+                AlarmClock alarmClock = new AlarmClock(task, scanner, filePath);
+                Thread alarmThread = new Thread(alarmClock);
+                alarmThread.start();
             } catch (DateTimeParseException e) {
-                System.out.println("Invalid format, Please use our HH:MM");
-            }
-
-            try (FileWriter writer = new FileWriter(writeFilePath, true)) {
-                for (int j = 0; j < tasks.size(); j++) {
-                    if (alarmTime != LocalTime.now()) {
-                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
-                                + "pending..." + "\n");
-                    } else if (alarmTime.equals(LocalTime.now())) {
-                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
-                                + "it is time..." + "\n");
-                    } else if (alarmTime.isAfter(LocalTime.now())) {
-                        writer.write((j + 1) + ". " + tasks.get(j).getTask() + " " + tasks.get(j).getAlarmTime()
-                                + "time passed..." + "\n");
-
-                    }
-                }
-
-                for (Task task : tasks) {
-                    AlarmClock alarmClock = new AlarmClock(task, scanner, filePath);
-                    Thread alarmThread = new Thread(alarmClock);
-                    alarmThread.start();
-                }
-                System.out.println("Task has been written in file");
-
-            } catch (FileNotFoundException e) {
-                System.out.println("Could not locate file location");
-            } catch (IOException e) {
-                System.out.println("Could not write file");
+                System.out.println("Invalid format, Please use our HH:MM:SS");
             }
         }
+        System.out.println("Task(s) have been written in file");
+        // } catch (FileNotFoundException e) {
+        // System.out.println("Could not locate file location");
+        // } catch (IOException e) {
+        // System.out.println("Could not write file");
+        // }
 
     }
 
