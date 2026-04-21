@@ -38,14 +38,8 @@ public class TaskManager {
                     String time = parts[1].trim();
                     // String status = parts[2].trim();
 
-                    try {
-                        LocalTime alarmTime = LocalTime.parse(time, formatter);
-                        Task task = new Task(name, alarmTime);
-                        tasks.add(task);
-                    } catch (DateTimeParseException e) {
-                        System.out.println("Skipping invalid time format: " + time);
-                    }
-
+                    Task task = new Task(name, LocalTime.parse(time));
+                    tasks.add(task);
                 }
             }
 
