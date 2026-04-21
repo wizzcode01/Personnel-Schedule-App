@@ -33,14 +33,15 @@ public class TaskManager {
                 // tasks.add(new Task(line, null));
                 // System.out.println(line);
                 String[] parts = line.split("\\|");
-                if (parts.length >= 3) {
+                if (parts.length >= 2) {
                     String name = parts[0].trim();
                     String time = parts[1].trim();
                     // String status = parts[2].trim();
 
                     try {
                         LocalTime alarmTime = LocalTime.parse(time, formatter);
-                        tasks.add(new Task(name, alarmTime));
+                        Task task = new Task(name, alarmTime);
+                        tasks.add(task);
                     } catch (DateTimeParseException e) {
                         System.out.println("Skipping invalid time format: " + time);
                     }
@@ -102,17 +103,6 @@ public class TaskManager {
                     System.out.println("Alarm set for " + alarmTime);
 
                     try (FileWriter writer = new FileWriter(writeFilePath, true)) {
-
-                        // LocalTime now = LocalTime.now();
-                        // String status;
-                        // if (alarmTime.equals(now)) {
-                        // status = "it is time...";
-                        // } else if (alarmTime.isAfter(now)) {
-                        // status = "pending";
-                        // } else {
-                        // status = "time passed...";
-                        // }
-
                         writer.write(task.getTask() + "|" + task.getAlarmTime() + "\n");
 
                         System.out.println("Task(s) have been written in file");
