@@ -18,6 +18,19 @@ public class TaskManager {
     String filePath = "codes\\file_example_WAV_1MG.wav";
     String writeFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
 
+    // public void saveTasksToFile() {
+    // try (FileWriter writer = new FileWriter(writeFilePath)) {
+    // for (Task task : tasks) {
+    // writer.write(task.getTask() + "|" + task.getAlarmTime() + "\n");
+    // }
+    // } catch (FileNotFoundException e) {
+    // System.out.println("Could not locate file location");
+    // } catch (IOException e) {
+    // System.out.println("Could not write into file ");
+
+    // }
+    // }
+
     public void showTask() {
         String readFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
         tasks.clear();
@@ -140,28 +153,26 @@ public class TaskManager {
         System.out.print("Enter task number to update: ");
         int taskNumber = scanner.nextInt();
         scanner.nextLine();
-        // if (taskNumber < 1 || taskNumber > tasks.size()) {
-        // System.out.println("Invalid task number");
-        // return;
-        // }
         System.out.print("Update new task for task" + taskNumber + ": ");
         String newTask = scanner.nextLine();
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            System.out.println("Invalid task number");
+            return;
+        }
+        System.out.print("Enter an alarm time for task" + taskNumber + " " + "(HH:MM:SS): ");
+        String inputTime = scanner.nextLine();
+        LocalTime alarmTime = LocalTime.parse(inputTime, formatter);
+        tasks.get(taskNumber - 1).setTask(newTask);
+        tasks.get(taskNumber - 1).setAlarmTime(alarmTime);
         try (FileWriter writer = new FileWriter(writeFilePath, true)) {
-            System.out.print("Enter an alarm time for task" + taskNumber + " " + "(HH:MM:SS): ");
-            String inputTime = scanner.nextLine();
+            writer.write(tasks.get(taskNumber - 1).getTask() + "|" + tasks.get(taskNumber - 1).getAlarmTime() + "\n");
 
-            LocalTime alarmTime = LocalTime.parse(inputTime, formatter);
-            tasks.get(taskNumber - 1).setTask(newTask);
-            tasks.get(taskNumber - 1).setAlarmTime(alarmTime);
-            for (Task task : tasks) {
-                writer.write((tasks.indexOf(task) + 1) + ". " + task.getTask() + " " + task.getAlarmTime() + "\n");
-            }
             System.out.println("Task updated successfully");
-            for (Task task : tasks) {
-                AlarmClock alarmClock = new AlarmClock(task, scanner, filePath);
-                Thread alarmThread = new Thread(alarmClock);
-                alarmThread.start();
-            }
+            // for (Task task : tasks) {
+            AlarmClock alarmClock = new AlarmClock(tasks.get(taskNumber - 1), scanner, filePath);
+            Thread alarmThread = new Thread(alarmClock);
+            alarmThread.start();
+            // }
         } catch (DateTimeParseException e) {
             System.out.println("Invalid format, Please use our HH:MM");
         } catch (IOException e) {
@@ -174,14 +185,14 @@ public class TaskManager {
         System.out.println("Enter task number to delete: ");
         int taskNumber = scanner.nextInt();
         scanner.nextLine();
-        try (FileWriter writer = new FileWriter(writeFilePath, true)) {
-            // if (taskNumber < 1 || taskNumber > tasks.size()) {
-            // System.out.println("Invalid task number");
-            // return;
-            // }
-            tasks.remove(taskNumber - 1);
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            System.out.println("Invalid task number");
+            return;
+        }
+        tasks.remove(taskNumber - 1);
+        try (FileWriter writer = new FileWriter(writeFilePath)) {
             for (Task task : tasks) {
-                writer.write((tasks.indexOf(task) + 1) + ". " + task.getTask() + " " + task.getAlarmTime() + "\n");
+                writer.write(task.getTask() + "|" + task.getAlarmTime() + "\n");
             }
             System.out.println("Task " + taskNumber + " has been deleted");
         } catch (IOException e) {
