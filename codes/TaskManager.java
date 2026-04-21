@@ -36,7 +36,7 @@ public class TaskManager {
                 if (parts.length >= 3) {
                     String name = parts[0].trim();
                     String time = parts[1].trim();
-                    String status = parts[2].trim();
+                    // String status = parts[2].trim();
 
                     try {
                         LocalTime alarmTime = LocalTime.parse(time, formatter);
@@ -53,8 +53,10 @@ public class TaskManager {
                 return;
             } else {
                 for (int i = 0; i < tasks.size(); i++) {
-                    System.out.println((i + 1) + ". " + tasks.get(i).getTask() + " " +
-                            tasks.get(i).getAlarmTime() + " " + tasks.get(i).getStatus());
+                    Task task = tasks.get(i);
+                    task.updateStatus();
+                    System.out.println((i + 1) + ". " + task.getTask() + " " +
+                            task.getAlarmTime() + " " + task.getStatus());
                 }
             }
 
@@ -101,17 +103,17 @@ public class TaskManager {
 
                     try (FileWriter writer = new FileWriter(writeFilePath, true)) {
 
-                        LocalTime now = LocalTime.now();
-                        String status;
-                        if (alarmTime.equals(now)) {
-                            status = "it is time...";
-                        } else if (alarmTime.isAfter(now)) {
-                            status = "pending";
-                        } else {
-                            status = "time passed...";
-                        }
+                        // LocalTime now = LocalTime.now();
+                        // String status;
+                        // if (alarmTime.equals(now)) {
+                        // status = "it is time...";
+                        // } else if (alarmTime.isAfter(now)) {
+                        // status = "pending";
+                        // } else {
+                        // status = "time passed...";
+                        // }
 
-                        writer.write(task.getTask() + "|" + task.getAlarmTime() + "|" + status + "\n");
+                        writer.write(task.getTask() + "|" + task.getAlarmTime() + "\n");
 
                         System.out.println("Task(s) have been written in file");
                     } catch (FileNotFoundException e) {
