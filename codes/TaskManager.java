@@ -20,7 +20,7 @@ public class TaskManager {
 
     public void showTask() {
         String readFilePath = "c:\\Users\\HomePC\\Desktop\\task-db.txt";
-        // tasks.clear();
+        tasks.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(readFilePath))) {
             String line;
@@ -29,31 +29,34 @@ public class TaskManager {
                 if (line.isEmpty()) {
                     continue;
                 }
-                System.out.println(line);
-                // String[] parts = line.split(",");
-                // if (parts.length >= 2) {
-                // String name = parts[0].trim();
-                // String time = parts[1].trim();
 
-                // try {
-                // LocalTime alarmTime = LocalTime.parse(time, formatter);
-                // tasks.add(new Task(name, alarmTime));
-                // } catch (DateTimeParseException e) {
-                // System.out.println("Skipping invalid time format: " + time);
-                // }
+                // tasks.add(new Task(line, null));
+                // System.out.println(line);
+                String[] parts = line.split("\\|");
+                if (parts.length >= 3) {
+                    String name = parts[0].trim();
+                    String time = parts[1].trim();
+                    String status = parts[2].trim();
 
-                // }
+                    try {
+                        LocalTime alarmTime = LocalTime.parse(time, formatter);
+                        tasks.add(new Task(name, alarmTime));
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Skipping invalid time format: " + time);
+                    }
+
+                }
             }
 
-            // if (tasks.isEmpty()) {
-            // System.out.println("No task added yet");
-            // return;
-            // } else {
-            // for (int i = 0; i < tasks.size(); i++) {
-            // System.out.println((i + 1) + ". " + tasks.get(i).getTask() + " " +
-            // tasks.get(i).getAlarmTime());
-            // }
-            // }
+            if (tasks.isEmpty()) {
+                System.out.println("No task added yet");
+                return;
+            } else {
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println((i + 1) + ". " + tasks.get(i).getTask() + " " +
+                            tasks.get(i).getAlarmTime() + " " + tasks.get(i).getStatus());
+                }
+            }
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
@@ -99,16 +102,16 @@ public class TaskManager {
                     try (FileWriter writer = new FileWriter(writeFilePath, true)) {
 
                         LocalTime now = LocalTime.now();
+                        String status;
                         if (alarmTime.equals(now)) {
-                            writer.write(task.getTask() + " " + (task.getAlarmTime())
-                                    + " it is time...\n");
+                            status = "it is time...";
                         } else if (alarmTime.isAfter(now)) {
-                            writer.write(task.getTask() + " " + (task.getAlarmTime())
-                                    + " pending...\n");
+                            status = "pending";
                         } else {
-                            writer.write(task.getTask() + " " + (task.getAlarmTime())
-                                    + " time passed...\n");
+                            status = "time passed...";
                         }
+
+                        writer.write(task.getTask() + "|" + task.getAlarmTime() + "|" + status + "\n");
 
                         System.out.println("Task(s) have been written in file");
                     } catch (FileNotFoundException e) {
